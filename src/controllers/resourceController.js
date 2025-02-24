@@ -1,4 +1,76 @@
 const Resource = require('../models/Resource');
+const { Op } = require('sequelize');
+
+// Search resources by keywords
+const searchResources = async (req, res) => {
+    try {
+        const { query, sortBy } = req.body;
+        if (!query || query.length === 0) {
+            return res.status(400).json({ message: 'Search query is required' });
+        }
+
+        const resources = await Resource.findAll({
+            where: {
+                keywords: {
+                    [Op.overlap]: query, // Searching for resources containing any of the keywords
+                },
+            },
+        });
+
+        // Calculate relevance score (count of matching keywords)
+        const scoredResources = resources.map(resource => {
+            const relevance = resource.keywords.filter(keyword => query.includes(keyword)).length;
+            return { ...resource.toJSON(), relevance };
+        });
+
+        // Sorting
+        if (sortBy === 'relevance') {
+            scoredResources.sort((a, b) => b.relevance - a.relevance);
+        } else if (sortBy === 'date') {
+            scoredResources.sort((a, b) => new Date(b.last_updated) - new Date(a.last_updated));
+        }
+
+        res.status(200).json(scoredResources);
+    } catch (error) {
+        res.status(500).json({ message: 'Error searching resources', error: error.message });
+    }
+};
+
+// Refine search within previous results
+const refineSearch = async (req, res) => {
+    try {
+        const { previousResults, query, sortBy } = req.body;
+        if (!previousResults || previousResults.length === 0) {
+            return res.status(400).json({ message: 'No previous search results provided' });
+        }
+        if (!query || query.length === 0) {
+            return res.status(400).json({ message: 'Refinement query is required' });
+        }
+
+        // Filter previous results
+        const refinedResults = previousResults.filter(resource =>
+            resource.keywords.some(keyword => query.includes(keyword))
+        );
+
+        // Calculate relevance score
+        const scoredResources = refinedResults.map(resource => {
+            const relevance = resource.keywords.filter(keyword => query.includes(keyword)).length;
+            return { ...resource, relevance };
+        });
+
+        // Sorting
+        if (sortBy === 'relevance') {
+            scoredResources.sort((a, b) => b.relevance - a.relevance);
+        } else if (sortBy === 'date') {
+            scoredResources.sort((a, b) => new Date(b.last_updated) - new Date(a.last_updated));
+        }
+
+        res.status(200).json(scoredResources);
+    } catch (error) {
+        res.status(500).json({ message: 'Error refining search', error: error.message });
+    }
+};
+
 
 // Create a new resource
 const createResource = async (req, res) => {
@@ -89,4 +161,4 @@ const deleteResource = async (req, res) => {
     }
 };
 
-module.exports = { createResource, getResources, getResourceById, updateResource, deleteResource };
+module.exports = { createResource, getResources, getResourceById, updateResource, deleteResource, searchResources, refineSearch };
