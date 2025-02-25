@@ -95,11 +95,44 @@ const createResource = async (req, res) => {
 
 // Get all resources
 const getResources = async (req, res) => {
+
+
     try {
-        const resources = await Resource.findAll();
-        res.status(200).json(resources);
+        const categoryId = req.params.categoryId;
+
+        if (categoryId) {
+            const resources = await Resource.findAll({
+                where: {
+                    category_id: categoryId
+                }
+            });
+            res.status(200).json(resources);
+        } else {
+            const resources = await Resource.findAll();
+            res.status(200).json(resources);
+        }
     } catch (error) {
         res.status(500).json({ message: 'Error fetching resources', error: error.message });
+    }
+};
+
+const getResourcesByCategory = async (req, res) => {
+    try {
+        const categoryId = req.params.categoryId;
+
+        const resources = await Resource.findAll({
+            where: {
+                category_id: categoryId
+            }
+        });
+
+        if (!resources || resources.length === 0) {
+            return res.status(404).json({ message: 'No resources found for this category' });
+        }
+
+        res.status(200).json(resources);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching resources by category', error: error.message });
     }
 };
 
