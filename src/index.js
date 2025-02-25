@@ -201,6 +201,232 @@ async function resetDatabase() {
   }
 }
 
+async function addMoreResources() {
+  try {
+    // Получаем все категории и пользователей
+    const categories = await Category.findAll();
+    const users = await User.findAll();
+
+    // Данные для новых ресурсов
+    const additionalResourceData = [
+      // Технологии
+      [
+        // {
+        //   title: "Wired",
+        //   url: "https://www.wired.com",
+        //   description:
+        //     "In-depth coverage of current and future trends in technology.",
+        //   contact_info: "editor@wired.com",
+        //   keywords: ["technology", "trends", "innovation"],
+        // },
+        // {
+        //   title: "The Verge",
+        //   url: "https://www.theverge.com",
+        //   description:
+        //     "The intersection of technology, science, art, and culture.",
+        //   contact_info: "contact@theverge.com",
+        //   keywords: ["tech", "culture", "science"],
+        // },
+        // {
+        //   title: "TechRadar",
+        //   url: "https://www.techradar.com",
+        //   description: "The latest technology news and reviews.",
+        //   contact_info: "support@techradar.com",
+        //   keywords: ["reviews", "news", "technology"],
+        // },
+        // {
+        //   title: "CNET",
+        //   url: "https://www.cnet.com",
+        //   description: "Product reviews, how-tos, and the latest tech news.",
+        //   contact_info: "help@cnet.com",
+        //   keywords: ["reviews", "tech", "news"],
+        // },
+        // {
+        //   title: "Gizmodo",
+        //   url: "https://gizmodo.com",
+        //   description: "Design, technology, and science news.",
+        //   contact_info: "tips@gizmodo.com",
+        //   keywords: ["design", "technology", "science"],
+        // },
+      ],
+      // Здоровье и благополучие
+      [
+        // {
+        //   title: "Mayo Clinic",
+        //   url: "https://www.mayoclinic.org",
+        //   description: "Trusted health information and resources.",
+        //   contact_info: "info@mayoclinic.org",
+        //   keywords: ["health", "wellness", "medical"],
+        // },
+        // {
+        //   title: "Healthline",
+        //   url: "https://www.healthline.com",
+        //   description: "Health information and news.",
+        //   contact_info: "contact@healthline.com",
+        //   keywords: ["health", "news", "wellness"],
+        // },
+        // {
+        //   title: "Verywell Health",
+        //   url: "https://www.verywellhealth.com",
+        //   description: "Health information and advice.",
+        //   contact_info: "support@verywell.com",
+        //   keywords: ["health", "advice", "wellness"],
+        // },
+        // {
+        //   title: "WebMD",
+        //   url: "https://www.webmd.com",
+        //   description: "Trusted health and wellness information.",
+        //   contact_info: "support@webmd.com",
+        //   keywords: ["health", "medicine", "wellness"],
+        // },
+        // {
+        //   title: "NHS",
+        //   url: "https://www.nhs.uk",
+        //   description: "National Health Service in the UK.",
+        //   contact_info: "contact@nhs.uk",
+        //   keywords: ["health", "government", "wellness"],
+        // },
+      ],
+      // Финансы
+      [
+        // {
+        //   title: "Bloomberg",
+        //   url: "https://www.bloomberg.com",
+        //   description: "Global business and financial news.",
+        //   contact_info: "info@bloomberg.com",
+        //   keywords: ["finance", "business", "news"],
+        // },
+        // {
+        //   title: "Yahoo Finance",
+        //   url: "https://finance.yahoo.com",
+        //   description: "Financial news, data, and insights.",
+        //   contact_info: "support@finance.yahoo.com",
+        //   keywords: ["finance", "news", "data"],
+        // },
+        // {
+        //   title: "CNBC",
+        //   url: "https://www.cnbc.com",
+        //   description: "Business news and financial information.",
+        //   contact_info: "contact@cnbc.com",
+        //   keywords: ["business", "finance", "news"],
+        // },
+        // {
+        //   title: "MarketWatch",
+        //   url: "https://www.marketwatch.com",
+        //   description: "Financial information and business news.",
+        //   contact_info: "support@marketwatch.com",
+        //   keywords: ["finance", "business", "news"],
+        // },
+        // {
+        //   title: "The Motley Fool",
+        //   url: "https://www.fool.com",
+        //   description: "Investment advice and stock market news.",
+        //   contact_info: "help@fool.com",
+        //   keywords: ["investing", "finance", "advice"],
+        // },
+      ],
+      // Образование
+      [
+        // {
+        //   title: "Coursera",
+        //   url: "https://www.coursera.org",
+        //   description: "Online courses from top universities.",
+        //   contact_info: "support@coursera.org",
+        //   keywords: ["education", "online courses", "learning"],
+        // },
+        // {
+        //   title: "edX",
+        //   url: "https://www.edx.org",
+        //   description: "Free online courses from universities.",
+        //   contact_info: "info@edx.org",
+        //   keywords: ["education", "courses", "learning"],
+        // },
+        // {
+        //   title: "Udacity",
+        //   url: "https://www.udacity.com",
+        //   description: "Nanodegree programs in tech fields.",
+        //   contact_info: "support@udacity.com",
+        //   keywords: ["education", "tech", "nanodegree"],
+        // },
+        // {
+        //   title: "Khan Academy",
+        //   url: "https://www.khanacademy.org",
+        //   description: "Free education for everyone.",
+        //   contact_info: "support@khanacademy.org",
+        //   keywords: ["education", "learning", "courses"],
+        // },
+        {
+          title: "Skillshare",
+          url: "https://www.skillshare.com",
+          description: "Online learning community.",
+          contact_info: "support@skillshare.com",
+          keywords: ["education", "learning", "community"],
+        },
+      ],
+      // Развлечения
+      [
+        {
+          title: "Hulu",
+          url: "https://www.hulu.com",
+          description: "Streaming service for TV shows and movies.",
+          contact_info: "support@hulu.com",
+          keywords: ["streaming", "movies", "TV"],
+        },
+        {
+          title: "YouTube",
+          url: "https://www.youtube.com",
+          description: "Video sharing platform.",
+          contact_info: "support@youtube.com",
+          keywords: ["video", "entertainment", "streaming"],
+        },
+        {
+          title: "IMDb",
+          url: "https://www.imdb.com",
+          description: "Movie and TV database.",
+          contact_info: "support@imdb.com",
+          keywords: ["movies", "TV", "database"],
+        },
+        {
+          title: "Rotten Tomatoes",
+          url: "https://www.rottentomatoes.com",
+          description: "Movie and TV reviews.",
+          contact_info: "support@rottentomatoes.com",
+          keywords: ["movies", "reviews", "entertainment"],
+        },
+        {
+          title: "Spotify",
+          url: "https://www.spotify.com",
+          description: "Music streaming service.",
+          contact_info: "support@spotify.com",
+          keywords: ["music", "streaming", "entertainment"],
+        },
+      ],
+    ];
+
+    // Добавляем ресурсы в базу данных
+    for (let i = 0; i < categories.length; i++) {
+      const category = categories[i];
+      const resources = additionalResourceData[i];
+
+      for (const resource of resources) {
+        await Resource.create({
+          ...resource,
+          last_updated: new Date(),
+          category_id: category.id,
+          owner_id: users[Math.floor(Math.random() * users.length)].id,
+        });
+      }
+    }
+
+    console.log("✅ 25 новых ресурсов добавлено (по 5 в каждую категорию).");
+  } catch (error) {
+    console.error("❌ Ошибка при добавлении ресурсов:", error);
+  } finally {
+    await sequelize.close();
+  }
+}
+
+// addMoreResources();
 // resetDatabase();
 
 (async () => {
