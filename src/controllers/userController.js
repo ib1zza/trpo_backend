@@ -16,6 +16,18 @@ const createUser = async (req, res) => {
   }
 };
 
+const verifyUser = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.update({ approved: true }, { where: { email } });
+    res.status(201).json(user);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error creating user", error: error.message });
+  }
+};
+
 // Get all users
 const getUsers = async (req, res) => {
   try {
@@ -71,4 +83,4 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { createUser, getUsers, getUserById, loginUser };
+module.exports = { createUser, getUsers, getUserById, loginUser, verifyUser };

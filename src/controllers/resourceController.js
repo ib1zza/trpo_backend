@@ -1,4 +1,6 @@
 const Resource = require("../models/Resource");
+const ResourceUpdate = require("../models/ResourceUpdate");
+
 const { Op } = require("sequelize");
 
 // Search resources by keywords
@@ -197,7 +199,6 @@ const updateResource = async (req, res) => {
     if (!resource) {
       return res.status(404).json({ message: "Resource not found" });
     }
-
     const {
       title,
       url,
@@ -207,6 +208,19 @@ const updateResource = async (req, res) => {
       contact_info,
       keywords,
     } = req.body;
+
+    // Сохраняем старые данные ресурса
+    const oldData = {
+      title: resource.title,
+      url: resource.url,
+      description: resource.description,
+      category_id: resource.category_id,
+      owner_id: resource.owner_id,
+      contact_info: resource.contact_info,
+      keywords: resource.keywords,
+    };
+
+    // Обновляем ресурс
     resource.title = title || resource.title;
     resource.url = url || resource.url;
     resource.description = description || resource.description;
@@ -216,8 +230,25 @@ const updateResource = async (req, res) => {
     resource.keywords = keywords || resource.keywords;
     resource.last_updated = new Date();
 
+    // Сохраняем обновленный ресурс
     await resource.save();
 
+    // Сравниваем старые и новые данные
+    const changes = [];
+    Object.entries(oldData).forEach(([key, oldValue]) => {
+      const newValue = resource[key];
+      if (oldValue !== newValue) {
+        changes.push(`${key} changed from "${oldValue}" to "${newValue}"`);
+      }
+    });
+
+    // Если есть изменения, сохраняем их в таблицу ResourceUpdate
+    if (changes.length > 0) {
+      await ResourceUpdate.create({
+        resource_id: resource.id,
+        update_description: changes.join(", "), // Объединяем все изменения в одну строку
+      });
+    }
     res.status(200).json(resource);
   } catch (error) {
     res
@@ -244,6 +275,50 @@ const deleteResource = async (req, res) => {
   }
 };
 
+// Change the owner of a resource by URL
+const changeResourceOwner = async (req, res) => {
+  try {
+    const { url, new_user_id } = req.body;
+    console.log(url, new_user_id);
+
+    if (!url || !new_user_id) {
+      return res
+        .status(400)
+        .json({ message: "URL and new_user_id are required" });
+    }
+
+    // Find the resource by URL
+    const resource = await Resource.findOne({
+      where: {
+        url: url,
+      },
+    });
+
+    if (!resource) {
+      return res.status(404).json({ message: "Resource not found" });
+    }
+
+    // Update the owner_id
+    resource.owner_id = +new_user_id;
+    resource.last_updated = new Date();
+
+    await resource.save();
+
+    await ResourceUpdate.create({
+      resource_id: resource.id,
+      update_description: `Owner changed to ${new_user_id}`,
+    });
+
+    res
+      .status(200)
+      .json({ message: "Resource owner updated successfully", resource });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error changing resource owner", error: error.message });
+  }
+};
+
 module.exports = {
   createResource,
   getResources,
@@ -253,4 +328,5 @@ module.exports = {
   searchResources,
   refineSearch,
   getResourcesByOwner,
+  changeResourceOwner,
 };
