@@ -6,6 +6,7 @@ const resourceRoutes = require("./routes/resourceRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const resourceUpdateRoutes = require("./routes/resourceUpdateRoutes"); // Подключаем маршруты обновлений
 const resourceVisitRoutes = require("./routes/resourceVisitRoutes"); // Подключаем маршруты визитов
+const path = require("path");
 
 const app = express();
 app.use(cors()); // Add this line
@@ -16,6 +17,11 @@ app.use("/api", resourceRoutes);
 app.use("/api", categoryRoutes);
 app.use("/api", resourceUpdateRoutes); // Роуты обновлений
 app.use("/api", resourceVisitRoutes); // Роуты визитов
+
+app.use(
+  "/uploads/avatars",
+  express.static(path.join(__dirname, "uploads/avatars"))
+);
 
 app.get("/", (req, res) => {
   res.send("API is working!");
@@ -429,9 +435,12 @@ async function addMoreResources() {
 // addMoreResources();
 // resetDatabase();
 
+// Удалит и пересоздаст все таблицы
+
 (async () => {
   try {
     await sequelize.sync();
+    // await sequelize.sync({ force: true });
     console.log("Database synced!");
     app.listen(3000, () => {
       console.log("Server is running on port 3000");
