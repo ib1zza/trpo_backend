@@ -39,6 +39,6 @@ router.post("/users/login", loginUser);
 router.post("/users/verify", verifyUser);
 
 router.post("/users/upload-avatar", upload.single("avatar"), uploadAvatar);
-router.get("/:id", getUserProfile);
+// router.get("/:id", getUserProfile);
 
 module.exports = router;
