@@ -2,7 +2,6 @@ const request = require("supertest");
 const app = require("../index"); // Импортируем Express-приложение
 const { User } = require("../models");
 const sequelize = require("../db");
-``;
 
 beforeAll(async () => {
   await sequelize.sync({ force: true }); // Создаём чистую тестовую БД

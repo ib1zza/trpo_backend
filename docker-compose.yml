@@ -14,5 +14,19 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  backend:
+    build: .
+    container_name: my_backend
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://my_user:my_password@postgres:5432/my_database
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    working_dir: /app
+    command: ["npm", "run", "start"]
+
 volumes:
   postgres_data:

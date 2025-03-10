@@ -4,7 +4,8 @@ const { Sequelize } = require("sequelize");
 // const sequelize = new Sequelize(config.development);
 
 // const env = process.env.NODE_ENV || "test";
-const config = require("./config/config")[process.env.NODE_ENV || "test"];
+const config =
+  require("./config/config")[process.env.NODE_ENV || "development"];
 const sequelize = new Sequelize(config);
 
 (async () => {
