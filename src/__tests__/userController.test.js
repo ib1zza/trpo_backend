@@ -37,7 +37,7 @@ describe("User Controller", () => {
   });
 
   test("Получение списка пользователей", async () => {
-    const res = await request(app).get("/api/`users");
+    const res = await request(app).get("/api/users");
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
   });

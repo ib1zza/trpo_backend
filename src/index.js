@@ -435,7 +435,7 @@ async function addMoreResources() {
 }
 
 // addMoreResources();
-// resetDatabase();
+resetDatabase();
 
 // Удалит и пересоздаст все таблицы
 
